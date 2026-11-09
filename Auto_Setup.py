@@ -1,0 +1,22 @@
+import os
+import time
+from rich import print
+print("[blue]="*10 + "[bold blue]-Auto_Setup Python Library-[/]" + "[blue]="*10)
+print("[blue]Please Wait a while....[/]")
+time.sleep(2)
+print("[bold blue]Download flask...")
+os.system("pip install flask")
+os.system('clear' if os.name == 'posix' else 'cls')
+print("[bold blue]Download csv...")
+os.system("pip install csv")
+os.system('clear' if os.name == 'posix' else 'cls')
+print("[bold blue]Download io...")
+os.system("pip install io")
+os.system('clear' if os.name == 'posix' else 'cls')
+print("[bold blue]Download sqlite3...")
+os.system("pip install sqlite3")
+os.system('clear' if os.name == 'posix' else 'cls')
+print("[blue]="*10 + "[cyan]-Auto_Setup Python Library-" + "[blue]="*10)
+print("[blue]Download Completed Successfully")
+print("[blue]Now To Run A Program Use : [underline yellow]python Main.py")
+print("[blue]Good bye...")
