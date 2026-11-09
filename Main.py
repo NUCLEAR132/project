@@ -605,8 +605,7 @@ def api_export(kind):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000, threaded=True)
-    #attempts = 3
+    app.run(debug=False, host="0.0.0.0", port=5000, threaded=True)
 #    Hh = 1
 #    while attempts > 0:
 #        try:
