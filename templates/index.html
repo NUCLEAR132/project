@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | School Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ====== المتغيرات العامة ====== */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --bg: #f1f5f9;
+            --bg-2: #e2e8f0;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-2: #64748b;
+            --border: #e2e8f0;
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #1e293b;
+            --topbar-bg: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --topbar-text: #ffffff;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --purple: #8b5cf6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+            --shadow-xl: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        html[data-theme="dark"] {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #1e3a8a;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --bg: #0f172a;
+            --bg-2: #1e293b;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-2: #94a3b8;
+            --border: #334155;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #f1f5f9;
+            --topbar-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --topbar-text: #f1f5f9;
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        * {
+            font-family: 'Cairo', sans-serif;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            font-size: 17px;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* ====== الشريط العلوي ====== */
+        header.top-bar {
+            background: var(--topbar-bg);
+            color: var(--topbar-text);
+            padding: 0 35px;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            right: 320px;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        .top-bar h5 {
+            font-size: 1.4rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.3px;
+        }
+        .top-bar .menu-toggle {
+            color: var(--topbar-text);
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            display: none;
+            transition: transform 0.2s;
+        }
+        .top-bar .menu-toggle:hover { transform: scale(1.1); }
+        .top-bar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--topbar-text);
+            padding: 6px 16px 6px 6px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+            transition: background 0.2s;
+        }
+        .top-bar .user-info:hover {
+            background: rgba(255,255,255,0.18);
+        }
+        .top-bar .user-info span {
+            font-size: 1.05rem !important;
+            font-weight: 700 !important;
+        }
+        .top-bar .user-info img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.7);
+        }
+
+        #themeToggle {
+            background: rgba(255,255,255,0.15) !important;
+            border: none !important;
+            color: #fff !important;
+            width: 48px !important;
+            height: 48px !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            font-size: 1.3rem !important;
+            transition: all 0.25s !important;
+        }
+        #themeToggle:hover {
+            background: rgba(255,255,255,0.25) !important;
+            transform: rotate(15deg) scale(1.05) !important;
+        }
+
+        /* ====== القائمة الجانبية ====== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--border);
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            padding-top: 28px;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.06);
+        }
+        .sidebar .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 28px 30px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 24px;
+        }
+        .sidebar .brand .cont {
+            width: 68px;
+            height: 68px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid transparent;
+            border-radius : 20px;
+            align-items : center;
+        }
+        .sidebar .brand .cont img {
+            width: 64px;
+            height: 64px;
+            mix-blend-mode: multiply;
+            transition: transform 0.3s;
+            border-radius: 20px;
+        }
+        /* ===== .sidebar .brand:hover img { transform: scale(1.08); } ====== */
+        html[data-theme="dark"] .sidebar .brand img {
+            mix-blend-mode: screen;
+        }
+        .sidebar .brand-text h5 {
+            font-weight: 900;
+            font-size: 1.35rem;
+            margin: 0;
+            color: var(--sidebar-text);
+            letter-spacing: -0.5px;
+        }
+        .sidebar .brand-text span {
+            font-size: 0.9rem;
+            color: var(--text-2);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .sidebar .nav-links {
+            list-style: none;
+            padding: 0 18px;
+            margin: 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .sidebar .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 17px 20px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 1.08rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar .nav-links li a::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.25s;
+        }
+        .sidebar .nav-links li a i {
+            font-size: 1.4rem;
+            width: 28px;
+            text-align: center;
+            transition: transform 0.25s;
+        }
+        .sidebar .nav-links li a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(-6px);
+        }
+        .sidebar .nav-links li a:hover i {
+            transform: scale(1.15);
+        }
+        .sidebar .nav-links li a.active {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        }
+        .sidebar .nav-links li a.active::before {
+            transform: scaleY(1);
+        }
+        .sidebar .nav-links li a.active i {
+            color: #ffffff;
+        }
+        .sidebar .logout-link {
+            padding: 20px 28px;
+            border-top: 2px solid var(--border);
+            margin-top: auto;
+        }
+        .sidebar .logout-link a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--red);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.05rem;
+            padding: 14px 16px;
+            border-radius: 12px;
+            transition: all 0.25s;
+            border: 2px solid transparent;
+        }
+        .sidebar .logout-link a i {
+            font-size: 1.3rem;
+        }
+        .sidebar .logout-link a:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: translateX(-4px);
+        }
+
+        /* ====== المحتوى الرئيسي ====== */
+        main.main-content {
+            margin-right: 320px;
+            padding: 115px 40px 60px;
+            min-height: 100vh;
+        }
+
+        /* ====== العناوين ====== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        .page-header h4 {
+            font-weight: 900;
+            font-size: 2.2rem;
+            color: var(--text);
+            margin: 0;
+            letter-spacing: -1px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .page-header .badge-title {
+            background: var(--primary-gradient);
+            color: #fff;
+            padding: 12px 26px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            letter-spacing: 0.3px;
+        }
+
+        /* ====== البطاقات ====== */
+        .panel {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+            transition: all 0.3s;
+        }
+        .panel:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        .panel-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text);
+            padding-bottom: 18px;
+            border-bottom: 2px solid var(--border);
+            letter-spacing: -0.3px;
+        }
+        .panel-title i {
+            color: var(--primary);
+            font-size: 1.6rem;
+            background: var(--primary-light);
+            padding: 8px;
+            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ====== الفورم ====== */
+        .form-label {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+        }
+        .form-control, .form-select {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 15px 18px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.25s;
+            height: auto;
+        }
+        .form-control:focus, .form-select:focus {
+            background: var(--card);
+            color: var(--text);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
+            outline: none;
+        }
+        .form-control::placeholder {
+            color: var(--text-2);
+            font-weight: 500;
+        }
+
+        /* ====== الأزرار ====== */
+        .btn-primary-custom {
+            background: var(--primary-gradient);
+            border: none;
+            color: #fff;
+            padding: 15px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            transition: all 0.25s;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            letter-spacing: 0.3px;
+        }
+        .btn-primary-custom:hover {
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+        }
+        .btn-primary-custom:active {
+            transform: translateY(-1px);
+        }
+        .btn-primary-custom:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-soft {
+            background: var(--card);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            transition: all 0.25s;
+        }
+        .btn-soft:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger-soft {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.25);
+            color: var(--red);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: all 0.25s;
+        }
+        .btn-danger-soft:hover {
+            background: var(--red);
+            color: #fff;
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-edit-soft {
+            background: rgba(37, 99, 235, 0.1);
+            border: 2px solid rgba(37, 99, 235, 0.25);
+            color: var(--primary);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            transition: all 0.25s;
+        }
+        .btn-edit-soft:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+        }
+
+        /* ====== الإحصائيات ====== */
+        .stat {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .stat:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary);
+        }
+        .stat-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+        .stat:hover .stat-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .stat-icon.violet {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
+            color: var(--primary);
+        }
+        .stat-icon.green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: var(--green);
+        }
+        .stat-icon.red {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: var(--red);
+        }
+        .stat-icon.yellow {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
+            color: var(--yellow);
+        }
+        .stat-icon.blue {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
+            color: var(--primary);
+        }
+        .stat-num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 6px;
+            color: var(--text);
+            letter-spacing: -1.5px;
+        }
+        .stat-lbl {
+            font-size: 1.05rem;
+            color: var(--text-2);
+            font-weight: 700;
+        }
+
+        /* ====== الجداول ====== */
+        .table-wrap {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        table.tbl {
+            margin: 0;
+            color: var(--text);
+            width: 100%;
+        }
+        .tbl thead {
+            background: var(--primary-gradient);
+        }
+        .tbl thead th {
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 22px 20px;
+            border: none;
+            text-align: right;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .tbl tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .tbl tbody tr:last-child { border-bottom: none; }
+        .tbl tbody tr:hover {
+            background: var(--bg);
+            transform: scale(1.005);
+        }
+        .tbl tbody td {
+            padding: 22px 20px;
+            border: none;
+            vertical-align: middle;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ====== العلامات ====== */
+        .tag {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+        .tag.violet { background: rgba(37, 99, 235, 0.12); color: var(--primary); }
+        .tag.green { background: rgba(16, 185, 129, 0.12); color: var(--green); }
+        .tag.red { background: rgba(239, 68, 68, 0.12); color: var(--red); }
+        .tag.yellow { background: rgba(245, 158, 11, 0.12); color: var(--yellow); }
+        .tag.blue { background: rgba(37, 99, 235, 0.12); color: var(--primary); }
+
+        /* ====== التنبيهات ====== */
+        .alert-custom {
+            background: rgba(245, 158, 11, 0.08);
+            border: 2px solid rgba(245, 158, 11, 0.25);
+            color: #b45309;
+            padding: 20px 24px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        html[data-theme="dark"] .alert-custom { color: #fbbf24; }
+        .alert-success {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.25);
+            color: #047857;
+        }
+        html[data-theme="dark"] .alert-success { color: #4ade80; }
+        .alert-error {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.25);
+            color: #b91c1c;
+        }
+        html[data-theme="dark"] .alert-error { color: #f87171; }
+
+        /* ====== النوافذ المنبثقة ====== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            animation: fadeIn 0.25s;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s;
+        }
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text);
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        .modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            border: none;
+            color: var(--red);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: var(--red);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        /* ====== التنبيهات المنبثقة ====== */
+        .toast {
+            position: fixed;
+            bottom: 35px;
+            left: 35px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 28px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            box-shadow: var(--shadow-xl);
+            display: none;
+            z-index: 3000;
+            align-items: center;
+            gap: 16px;
+            max-width: 440px;
+        }
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #047857;
+        }
+        .toast.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #b91c1c;
+        }
+        html[data-theme="dark"] .toast.success { color: #4ade80; }
+        html[data-theme="dark"] .toast.error { color: #f87171; }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ====== شريط التمرير ====== */
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+            border: 2px solid var(--bg);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ====== الاستجابة للجوال ====== */
+        @media (max-width: 1200px) {
+            .sidebar { width: 290px; }
+            header.top-bar { right: 290px; }
+            main.main-content { margin-right: 290px; padding: 105px 28px 50px; }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                width: 300px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            header.top-bar {
+                right: 0;
+                padding: 0 22px;
+                height: 78px;
+            }
+            main.main-content {
+                margin-right: 0;
+                padding: 100px 22px 45px;
+            }
+            .top-bar .menu-toggle { display: block; }
+            .page-header h4 { font-size: 1.7rem; }
+            .stat-num { font-size: 2rem; }
+            .stat-icon { width: 60px; height: 60px; font-size: 1.6rem; }
+            .panel { padding: 28px; }
+            .tbl thead th, .tbl tbody td { padding: 16px 14px; font-size: 1rem; }
+            .sidebar .nav-links li a { font-size: 1.05rem; padding: 15px 18px; }
+            .panel-title { font-size: 1.15rem; }
+            .panel-title i { width: 38px; height: 38px; font-size: 1.3rem; }
+        }
+
+        @media (max-width: 576px) {
+            body { font-size: 15px; }
+            .page-header h4 { font-size: 1.4rem; }
+            .page-header .badge-title { padding: 8px 18px; font-size: 0.9rem; }
+            .stat-num { font-size: 1.6rem; }
+            .stat-lbl { font-size: 0.9rem; }
+            .stat-icon { width: 52px; height: 52px; font-size: 1.4rem; }
+            .stat { padding: 20px; gap: 14px; }
+            .panel { padding: 20px; border-radius: 16px; }
+            .panel-title { font-size: 1.05rem; margin-bottom: 20px; }
+            .btn-primary-custom { padding: 12px 20px; font-size: 0.95rem; }
+            .btn-soft { padding: 11px 16px; font-size: 0.9rem; }
+            .form-control, .form-select { padding: 12px 14px; font-size: 0.95rem; }
+            .modal-box { padding: 24px; }
+            .toast { left: 16px; right: 16px; bottom: 20px; max-width: none; padding: 16px 20px; }
+            .top-bar h5 { font-size: 1.05rem !important; }
+            .top-bar .user-info { padding: 4px 10px 4px 4px; }
+            .top-bar .user-info span { display: none; }
+            .top-bar .user-info img { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== الشريط العلوي ====== -->
+    <header class="top-bar">
+        <div class="d-flex align-items-center gap-3">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            <h5 class="mb-0 fw-bold">{{ title }}</h5>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="user-info">
+                <span>Admin</span>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff&bold=true" alt="User">
+            </div>
+            <button id="themeToggle" title="تبديل الوضع">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ====== القائمة الجانبية ====== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="cont">
+                <img src="{{ logo_light }}" alt="Logo" id="sidebarLogo"
+                    data-light="{{ logo_light }}" data-dark="{{ logo_dark }}">
+            </div>
+            <div class="brand-text">
+                <h5>Tenx Plus School</h5>
+                <span>Dashboard</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/home" class="{{ 'active' if page == 'home' else '' }}"><i class="bi bi-house-door-fill"></i> الصفحة الرئيسية</a></li>
+            <li><a href="/students" class="{{ 'active' if page == 'students' else '' }}"><i class="bi bi-people-fill"></i> الطلاب</a></li>
+            <li><a href="/teachers" class="{{ 'active' if page == 'teachers' else '' }}"><i class="bi bi-person-badge-fill"></i> المعلمين</a></li>
+            <li><a href="/schedule" class="{{ 'active' if page == 'schedule' else '' }}"><i class="bi bi-calendar3"></i> الجدول الدراسي</a></li>
+            <li><a href="/grades" class="{{ 'active' if page == 'grades' else '' }}"><i class="bi bi-clipboard-data-fill"></i> الدرجات</a></li>
+            <li><a href="/attendance" class="{{ 'active' if page == 'attendance' else '' }}"><i class="bi bi-check2-square"></i> الحضور</a></li>
+            <li><a href="/reports" class="{{ 'active' if page == 'reports' else '' }}"><i class="bi bi-file-earmark-bar-graph-fill"></i> التقارير</a></li>
+        </ul>
+        <div class="logout-link">
+            <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a>
+        </div>
+    </aside>
+
+    <!-- ====== المحتوى الرئيسي ====== -->
+    <main class="main-content">
+
+        <div class="page-header">
+            <h4>{{ title }}</h4>
+            <span class="badge-title">{{ title }}</span>
+        </div>
+
+        {% if page == 'home' %}
+        <div id="homeView">
+            <div class="row g-4 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat">
+                        <div class="stat-icon violet"><i class="bi bi-people-fill"></i></div>
+                        <div><div class="stat-num" id="stStudents">—</div><div class="stat-lbl">الطلاب</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat">
+                        <div class="stat-icon blue"><i class="bi bi-person-badge-fill"></i></div>
+                        <div><div class="stat-num" id="stTeachers">—</div><div class="stat-lbl">المعلمون</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat">
+                        <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+                        <div><div class="stat-num" id="stPresent">—</div><div class="stat-lbl">حضور اليوم</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat">
+                        <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+                        <div><div class="stat-num" id="stAbsent">—</div><div class="stat-lbl">غياب اليوم</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="stat">
+                        <div class="stat-icon yellow"><i class="bi bi-calendar3"></i></div>
+                        <div><div class="stat-num" id="stClasses">—</div><div class="stat-lbl">الحصص</div></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat">
+                        <div class="stat-icon violet"><i class="bi bi-clipboard-data-fill"></i></div>
+                        <div><div class="stat-num" id="stGrades">—</div><div class="stat-lbl">الدرجات المسجلة</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel mt-4">
+                <div class="panel-title"><i class="bi bi-bar-chart-fill"></i> توزيع الطلاب حسب الصف</div>
+                <div id="gradeDist"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'students' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-person-plus-fill"></i> إضافة طالب</div>
+            <form id="studentForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" class="form-control" id="sName" placeholder="اسم الطالب">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">الصف</label>
+                        <input type="text" class="form-control" id="sGrade" placeholder="مثال: الأول">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">تاريخ الميلاد</label>
+                        <input type="date" class="form-control" id="sBirth">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">هاتف ولي الأمر</label>
+                        <input type="text" class="form-control" id="sPhone" dir="ltr">
+                    </div>
+                    <div class="col-md-10">
+                        <label class="form-label">العنوان</label>
+                        <input type="text" class="form-control" id="sAddress">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn-primary-custom w-100">
+                            <i class="bi bi-plus-lg"></i> إضافة
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="panel-title mb-0"><i class="bi bi-people-fill"></i> قائمة الطلاب</div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <input type="text" class="form-control" id="sSearch" placeholder="بحث بالاسم أو الهاتف" style="width: 280px;">
+                    <button class="btn-soft" id="exportStudentsBtn"><i class="bi bi-download"></i> تصدير CSV</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>الصف</th>
+                                <th>تاريخ الميلاد</th>
+                                <th>هاتف ولي الأمر</th>
+                                <th>العنوان</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'teachers' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-person-plus-fill"></i> إضافة معلم</div>
+            <form id="teacherForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" class="form-control" id="tName" placeholder="اسم المعلم">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">المادة</label>
+                        <input type="text" class="form-control" id="tSubject" placeholder="المادة">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">الهاتف</label>
+                        <input type="text" class="form-control" id="tPhone" dir="ltr">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">تاريخ التعيين</label>
+                        <input type="date" class="form-control" id="tHire">
+                    </div>
+                    <div class="col-md-10">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" id="tEmail" dir="ltr">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn-primary-custom w-100">
+                            <i class="bi bi-plus-lg"></i> إضافة
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="panel-title mb-0"><i class="bi bi-person-badge-fill"></i> قائمة المعلمين</div>
+                <button class="btn-soft" id="exportTeachersBtn"><i class="bi bi-download"></i> تصدير CSV</button>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>المادة</th>
+                                <th>الهاتف</th>
+                                <th>البريد</th>
+                                <th>تاريخ التعيين</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'schedule' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-plus-square-fill"></i> إضافة حصة</div>
+            <form id="scheduleForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">الصف</label>
+                        <input type="text" class="form-control" id="scGrade" placeholder="مثال: الأول">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">اليوم</label>
+                        <select class="form-select" id="scDay">
+                            <option>الأحد</option>
+                            <option>الاثنين</option>
+                            <option>الثلاثاء</option>
+                            <option>الأربعاء</option>
+                            <option>الخميس</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">الحصة</label>
+                        <input type="number" class="form-control" id="scPeriod" value="1" min="1" max="8" dir="ltr">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">المادة</label>
+                        <input type="text" class="form-control" id="scSubject">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn-primary-custom w-100">
+                            <i class="bi bi-plus-lg"></i> إضافة
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="panel-title mb-0"><i class="bi bi-calendar3"></i> جدول الحصص</div>
+                <input type="text" class="form-control" id="scGradeFilter" placeholder="فلترة حسب الصف" style="width: 280px;">
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>الصف</th>
+                                <th>اليوم</th>
+                                <th>الحصة</th>
+                                <th>المادة</th>
+                                <th>المعلم</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'grades' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-clipboard-plus-fill"></i> تسجيل درجة</div>
+            <form id="gradeForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">الطالب</label>
+                        <select class="form-select" id="gStudent"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">المادة</label>
+                        <input type="text" class="form-control" id="gSubject">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">الدرجة</label>
+                        <input type="number" step="0.01" class="form-control" id="gScore" dir="ltr">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">من</label>
+                        <input type="number" step="0.01" class="form-control" id="gMax" value="100" dir="ltr">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn-primary-custom w-100">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label">ملاحظات</label>
+                        <input type="text" class="form-control" id="gNotes">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">التاريخ</label>
+                        <input type="date" class="form-control" id="gDate">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="panel-title mb-0"><i class="bi bi-clipboard-data-fill"></i> سجل الدرجات</div>
+                <button class="btn-soft" id="exportGradesBtn"><i class="bi bi-download"></i> تصدير CSV</button>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>الطالب</th>
+                                <th>الصف</th>
+                                <th>المادة</th>
+                                <th>الدرجة</th>
+                                <th>النسبة</th>
+                                <th>التاريخ</th>
+                                <th>ملاحظات</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'attendance' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-check2-square"></i> تسجيل حضور</div>
+            <form id="attendanceForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">الطالب</label>
+                        <select class="form-select" id="aStudent"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">التاريخ</label>
+                        <input type="date" class="form-control" id="aDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" id="aStatus">
+                            <option value="present">حاضر</option>
+                            <option value="absent">غائب</option>
+                            <option value="late">متأخر</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn-primary-custom w-100">
+                            <i class="bi bi-check-lg"></i> تسجيل
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">ملاحظات</label>
+                        <input type="text" class="form-control" id="aNotes">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div class="panel-title mb-0"><i class="bi bi-list-check"></i> سجل الحضور</div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <input type="date" class="form-control" id="aFilterDate" style="width: 220px;">
+                    <button class="btn-soft" id="exportAttendanceBtn"><i class="bi bi-download"></i> تصدير CSV</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <div class="table-responsive">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>الطالب</th>
+                                <th>الصف</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if page == 'reports' %}
+        <div class="panel mb-4">
+            <div class="panel-title"><i class="bi bi-file-earmark-bar-graph-fill"></i> تقرير طالب</div>
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">اختر الطالب</label>
+                    <select class="form-select" id="rStudent"></select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn-primary-custom w-100" id="showReportBtn">
+                        <i class="bi bi-search"></i> عرض التقرير
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reportOutput"></div>
+        {% endif %}
+
+    </main>
+
+    <!-- ====== النافذة المنبثقة ====== -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <div class="modal-title">
+                <span id="modalTitle">تعديل</span>
+                <button class="modal-close" id="modalClose"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- ====== التنبيه المنبثق ====== -->
+    <div class="toast" id="toast">
+        <i class="bi bi-info-circle" id="toastIcon"></i>
+        <span id="toastMsg"></span>
+    </div>
+
+    <script>
+        // ====== الوضع المظلم وتبديل الشعار ======
+        const htmlEl = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const sidebarLogo = document.getElementById('sidebarLogo');
+
+        const lightSrc = sidebarLogo.dataset.light;
+        const darkSrc = sidebarLogo.dataset.dark;
+
+        function updateLogo(theme) {
+            sidebarLogo.src = (theme === 'dark') ? darkSrc : lightSrc;
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        themeIcon.className = savedTheme === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+        updateLogo(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeIcon.className = next === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+            updateLogo(next);
+        });
+
+        // ====== القائمة الجانبية للجوال ======
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // ====== تسجيل الخروج ======
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+        });
+
+        // ====== الدوال المساعدة ======
+        function esc(s) {
+            if (s === null || s === undefined) return '';
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function toast(message, type = 'success') {
+            const el = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMsg');
+            el.className = 'toast show ' + type;
+            icon.className = 'bi ' + (type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill');
+            msg.textContent = message;
+            setTimeout(() => el.className = 'toast', 3000);
+        }
+
+        async function api(url, options = {}) {
+            const res = await fetch(url, {
+                headers: { 'Content-Type': 'application/json' },
+                ...options
+            });
+            if (res.status === 401) {
+                window.location.href = '/login';
+                return { success: false };
+            }
+            return res.json();
+        }
+
+        const page = '{{ page }}';
+
+        // ====== كود الصفحة الرئيسية ======
+        {% if page == 'home' %}
+        async function loadStats() {
+            const data = await api('/api/stats');
+            if (!data.success) return;
+            document.getElementById('stStudents').textContent = data.students;
+            document.getElementById('stTeachers').textContent = data.teachers;
+            document.getElementById('stPresent').textContent = data.present_today;
+            document.getElementById('stAbsent').textContent = data.absent_today;
+            document.getElementById('stClasses').textContent = data.classes;
+            document.getElementById('stGrades').textContent = data.grades;
+
+            const dist = document.getElementById('gradeDist');
+            if (!data.by_grade.length) {
+                dist.innerHTML = '<div class="alert-custom"><i class="bi bi-info-circle"></i> لا توجد بيانات بعد</div>';
+            } else {
+                const max = Math.max(...data.by_grade.map(x => x.count));
+                dist.innerHTML = data.by_grade.map(g => `
+                    <div style="margin-bottom: 22px;">
+                        <div class="d-flex justify-content-between" style="font-size: 1.1rem; margin-bottom: 10px; font-weight: 800;">
+                            <span>${esc(g.grade)}</span>
+                            <span style="color: var(--primary);">${g.count}</span>
+                        </div>
+                        <div style="height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden;">
+                            <div style="height: 100%; background: var(--primary-gradient); width: ${(g.count / max * 100).toFixed(0)}%; border-radius: 6px; transition: width 0.8s;"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        loadStats();
+        {% endif %}
+
+        // ====== كود صفحة الطلاب ======
+        {% if page == 'students' %}
+        async function loadStudents() {
+            const q = document.getElementById('sSearch').value.trim();
+            const data = await api('/api/students?q=' + encodeURIComponent(q));
+            const body = document.getElementById('studentsBody');
+            if (!data.success || !data.students.length) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-2); padding: 60px; font-size: 1.2rem; font-weight: 700;">لا يوجد طلاب</td></tr>';
+                return;
+            }
+            body.innerHTML = data.students.map((s, i) => `
+                <tr>
+                    <td style="color: var(--text-2); font-weight: 800;">${i + 1}</td>
+                    <td style="font-weight: 800;">${esc(s.name)}</td>
+                    <td><span class="tag violet">${esc(s.grade)}</span></td>
+                    <td style="color: var(--text-2);">${esc(s.birth_date || '—')}</td>
+                    <td style="font-family: monospace; direction: ltr; font-weight: 700;">${esc(s.guardian_phone || '—')}</td>
+                    <td style="color: var(--text-2);">${esc(s.address || '—')}</td>
+                    <td>
+                        <button class="btn-edit-soft" onclick="editStudent(${s.id})"><i class="bi bi-pencil-fill"></i></button>
+                        <button class="btn-danger-soft" onclick="deleteStudent(${s.id})"><i class="bi bi-trash-fill"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('sName').value.trim(),
+                grade: document.getElementById('sGrade').value.trim(),
+                birth_date: document.getElementById('sBirth').value,
+                guardian_phone: document.getElementById('sPhone').value.trim(),
+                address: document.getElementById('sAddress').value.trim()
+            };
+            if (!data.name || !data.grade) { toast('الاسم والصف مطلوبان', 'error'); return; }
+            const res = await api('/api/students', { method: 'POST', body: JSON.stringify(data) });
+            if (res.success) {
+                toast('تمت الإضافة بنجاح');
+                e.target.reset();
+                loadStudents();
+            } else {
+                toast(res.error || 'فشل', 'error');
+            }
+        });
+
+        window.deleteStudent = async function(id) {
+            if (!confirm('حذف هذا الطالب؟')) return;
+            const res = await api('/api/students/' + id, { method: 'DELETE' });
+            if (res.success) { toast('تم الحذف'); loadStudents(); }
+        };
+
+        window.editStudent = async function(id) {
+            const all = await api('/api/students');
+            const s = all.students.find(x => x.id === id);
+            if (!s) return;
+            const modal = document.getElementById('editModal');
+            document.getElementById('modalTitle').textContent = 'تعديل بيانات طالب';
+            document.getElementById('modalContent').innerHTML = `
+                <div class="row g-3">
+                    <div class="col-12"><label class="form-label">الاسم</label>
+                        <input class="form-control" id="eName" value="${esc(s.name)}"></div>
+                    <div class="col-6"><label class="form-label">الصف</label>
+                        <input class="form-control" id="eGrade" value="${esc(s.grade)}"></div>
+                    <div class="col-6"><label class="form-label">تاريخ الميلاد</label>
+                        <input type="date" class="form-control" id="eBirth" value="${esc(s.birth_date || '')}"></div>
+                    <div class="col-6"><label class="form-label">هاتف ولي الأمر</label>
+                        <input class="form-control" id="ePhone" value="${esc(s.guardian_phone || '')}" dir="ltr"></div>
+                    <div class="col-6"><label class="form-label">العنوان</label>
+                        <input class="form-control" id="eAddress" value="${esc(s.address || '')}"></div>
+                    <div class="col-12 mt-4">
+                        <button class="btn-primary-custom w-100" id="saveStudent">
+                            <i class="bi bi-check-lg"></i> حفظ التعديلات
+                        </button>
+                    </div>
+                </div>
+            `;
+            modal.classList.add('active');
+
+            document.getElementById('saveStudent').onclick = async () => {
+                const data = {
+                    name: document.getElementById('eName').value.trim(),
+                    grade: document.getElementById('eGrade').value.trim(),
+                    birth_date: document.getElementById('eBirth').value,
+                    guardian_phone: document.getElementById('ePhone').value.trim(),
+                    address: document.getElementById('eAddress').value.trim()
+                };
+                const res = await api('/api/students/' + id, { method: 'PUT', body: JSON.stringify(data) });
+                if (res.success) {
+                    toast('تم التحديث');
+                    modal.classList.remove('active');
+                    loadStudents();
+                }
+            };
+        };
+
+        document.getElementById('sSearch').addEventListener('input', () => {
+            clearTimeout(window._st);
+            window._st = setTimeout(loadStudents, 300);
+        });
+
+        document.getElementById('exportStudentsBtn').addEventListener('click', () => {
+            window.location.href = '/api/export/students';
+        });
+
+        loadStudents();
+        {% endif %}
+
+        // ====== كود صفحة المعلمين ======
+        {% if page == 'teachers' %}
+        async function loadTeachers() {
+            const data = await api('/api/teachers');
+            const body = document.getElementById('teachersBody');
+            if (!data.success || !data.teachers.length) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-2); padding: 60px; font-size: 1.2rem; font-weight: 700;">لا يوجد معلمون</td></tr>';
+                return;
+            }
+            body.innerHTML = data.teachers.map((t, i) => `
+                <tr>
+                    <td style="color: var(--text-2); font-weight: 800;">${i + 1}</td>
+                    <td style="font-weight: 800;">${esc(t.name)}</td>
+                    <td><span class="tag blue">${esc(t.subject)}</span></td>
+                    <td style="font-family: monospace; direction: ltr; font-weight: 700;">${esc(t.phone || '—')}</td>
+                    <td style="font-size: 1rem; color: var(--text-2); direction: ltr;">${esc(t.email || '—')}</td>
+                    <td style="color: var(--text-2);">${esc(t.hire_date || '—')}</td>
+                    <td>
+                        <button class="btn-danger-soft" onclick="deleteTeacher(${t.id})"><i class="bi bi-trash-fill"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('teacherForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('tName').value.trim(),
+                subject: document.getElementById('tSubject').value.trim(),
+                phone: document.getElementById('tPhone').value.trim(),
+                email: document.getElementById('tEmail').value.trim(),
+                hire_date: document.getElementById('tHire').value
+            };
+            if (!data.name || !data.subject) { toast('الاسم والمادة مطلوبان', 'error'); return; }
+            const res = await api('/api/teachers', { method: 'POST', body: JSON.stringify(data) });
+            if (res.success) { toast('تمت الإضافة'); e.target.reset(); loadTeachers(); }
+            else toast(res.error || 'فشل', 'error');
+        });
+
+        window.deleteTeacher = async function(id) {
+            if (!confirm('حذف هذا المعلم؟')) return;
+            const res = await api('/api/teachers/' + id, { method: 'DELETE' });
+            if (res.success) { toast('تم الحذف'); loadTeachers(); }
+        };
+
+        document.getElementById('exportTeachersBtn').addEventListener('click', () => {
+            window.location.href = '/api/export/teachers';
+        });
+
+        loadTeachers();
+        {% endif %}
+
+        // ====== كود صفحة الجدول ======
+        {% if page == 'schedule' %}
+        async function loadSchedule() {
+            const grade = document.getElementById('scGradeFilter').value.trim();
+            const url = '/api/schedule' + (grade ? '?grade=' + encodeURIComponent(grade) : '');
+            const data = await api(url);
+            const body = document.getElementById('scheduleBody');
+            if (!data.success || !data.classes.length) {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-2); padding: 60px; font-size: 1.2rem; font-weight: 700;">لا توجد حصص</td></tr>';
+                return;
+            }
+            body.innerHTML = data.classes.map(c => `
+                <tr>
+                    <td><span class="tag violet">${esc(c.grade)}</span></td>
+                    <td style="font-weight: 700;">${esc(c.day)}</td>
+                    <td style="font-weight: 800; font-size: 1.15rem;">${c.period}</td>
+                    <td style="font-weight: 800;">${esc(c.subject)}</td>
+                    <td style="color: var(--text-2);">${esc(c.teacher_name || '—')}</td>
+                    <td><button class="btn-danger-soft" onclick="deleteClass(${c.id})"><i class="bi bi-trash-fill"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                grade: document.getElementById('scGrade').value.trim(),
+                day: document.getElementById('scDay').value,
+                period: parseInt(document.getElementById('scPeriod').value),
+                subject: document.getElementById('scSubject').value.trim()
+            };
+            if (!data.grade || !data.subject) { toast('الصف والمادة مطلوبان', 'error'); return; }
+            const res = await api('/api/schedule', { method: 'POST', body: JSON.stringify(data) });
+            if (res.success) { toast('تمت الإضافة'); e.target.reset(); loadSchedule(); }
+            else toast(res.error || 'فشل', 'error');
+        });
+
+        window.deleteClass = async function(id) {
+            if (!confirm('حذف هذه الحصة؟')) return;
+            const res = await api('/api/schedule/' + id, { method: 'DELETE' });
+            if (res.success) { toast('تم الحذف'); loadSchedule(); }
+        };
+
+        document.getElementById('scGradeFilter').addEventListener('input', () => {
+            clearTimeout(window._sct);
+            window._sct = setTimeout(loadSchedule, 300);
+        });
+
+        loadSchedule();
+        {% endif %}
+
+        // ====== كود صفحة الدرجات ======
+        {% if page == 'grades' %}
+        async function fillStudents() {
+            const data = await api('/api/students');
+            const sel = document.getElementById('gStudent');
+            sel.innerHTML = '<option value="">اختر الطالب</option>';
+            if (data.success) {
+                data.students.forEach(s => {
+                    sel.insertAdjacentHTML('beforeend', `<option value="${s.id}">${esc(s.name)} — ${esc(s.grade)}</option>`);
+                });
+            }
+        }
+
+        async function loadGrades() {
+            const data = await api('/api/grades');
+            const body = document.getElementById('gradesBody');
+            if (!data.success || !data.grades.length) {
+                body.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-2); padding: 60px; font-size: 1.2rem; font-weight: 700;">لا توجد درجات</td></tr>';
+                return;
+            }
+            body.innerHTML = data.grades.map(g => {
+                const pct = g.max_score > 0 ? (g.score / g.max_score * 100) : 0;
+                const cls = pct >= 75 ? 'green' : pct >= 50 ? 'yellow' : 'red';
+                return `
+                    <tr>
+                        <td style="font-weight: 800;">${esc(g.student_name)}</td>
+                        <td><span class="tag violet">${esc(g.student_grade)}</span></td>
+                        <td style="font-weight: 700;">${esc(g.subject)}</td>
+                        <td style="font-family: monospace; direction: ltr; font-weight: 800; font-size: 1.1rem;">${g.score} / ${g.max_score}</td>
+                        <td><span class="tag ${cls}">${pct.toFixed(1)}%</span></td>
+                        <td style="color: var(--text-2);">${esc(g.exam_date || '—')}</td>
+                        <td style="color: var(--text-2); font-size: 0.95rem;">${esc(g.notes || '—')}</td>
+                        <td><button class="btn-danger-soft" onclick="deleteGrade(${g.id})"><i class="bi bi-trash-fill"></i></button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('gradeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                student_id: document.getElementById('gStudent').value,
+                subject: document.getElementById('gSubject').value.trim(),
+                score: document.getElementById('gScore').value,
+                max_score: document.getElementById('gMax').value,
+                exam_date: document.getElementById('gDate').value,
+                notes: document.getElementById('gNotes').value.trim()
+            };
+            if (!data.student_id || !data.subject || !data.score) { toast('أكمل الحقول المطلوبة', 'error'); return; }
+            const res = await api('/api/grades', { method: 'POST', body: JSON.stringify(data) });
+            if (res.success) { toast('تمت الإضافة'); e.target.reset(); loadGrades(); }
+            else toast(res.error || 'فشل', 'error');
+        });
+
+        window.deleteGrade = async function(id) {
+            if (!confirm('حذف هذه الدرجة؟')) return;
+            const res = await api('/api/grades/' + id, { method: 'DELETE' });
+            if (res.success) { toast('تم الحذف'); loadGrades(); }
+        };
+
+        document.getElementById('exportGradesBtn').addEventListener('click', () => {
+            window.location.href = '/api/export/grades';
+        });
+
+        fillStudents();
+        loadGrades();
+        {% endif %}
+
+        // ====== كود صفحة الحضور ======
+        {% if page == 'attendance' %}
+        async function fillAttendanceStudents() {
+            const data = await api('/api/students');
+            const sel = document.getElementById('aStudent');
+            sel.innerHTML = '<option value="">اختر الطالب</option>';
+            if (data.success) {
+                data.students.forEach(s => {
+                    sel.insertAdjacentHTML('beforeend', `<option value="${s.id}">${esc(s.name)} — ${esc(s.grade)}</option>`);
+                });
+            }
+        }
+
+        async function loadAttendance() {
+            const date = document.getElementById('aFilterDate').value;
+            const url = '/api/attendance' + (date ? '?date=' + date : '');
+            const data = await api(url);
+            const body = document.getElementById('attendanceBody');
+            if (!data.success || !data.attendance.length) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-2); padding: 60px; font-size: 1.2rem; font-weight: 700;">لا يوجد سجل</td></tr>';
+                return;
+            }
+            const statusMap = {
+                present: '<span class="tag green">حاضر</span>',
+                absent: '<span class="tag red">غائب</span>',
+                late: '<span class="tag yellow">متأخر</span>'
+            };
+            body.innerHTML = data.attendance.map(a => `
+                <tr>
+                    <td style="font-weight: 800;">${esc(a.student_name)}</td>
+                    <td><span class="tag violet">${esc(a.student_grade)}</span></td>
+                    <td style="font-family: monospace; direction: ltr; font-weight: 700;">${esc(a.date)}</td>
+                    <td>${statusMap[a.status] || esc(a.status)}</td>
+                    <td style="color: var(--text-2); font-size: 0.95rem;">${esc(a.notes || '—')}</td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                student_id: document.getElementById('aStudent').value,
+                date: document.getElementById('aDate').value,
+                status: document.getElementById('aStatus').value,
+                notes: document.getElementById('aNotes').value.trim()
+            };
+            if (!data.student_id || !data.date) { toast('اختر الطالب والتاريخ', 'error'); return; }
+            const res = await api('/api/attendance', { method: 'POST', body: JSON.stringify(data) });
+            if (res.success) { toast('تم التسجيل'); loadAttendance(); }
+            else toast(res.error || 'فشل', 'error');
+        });
+
+        document.getElementById('aFilterDate').addEventListener('change', loadAttendance);
+        document.getElementById('exportAttendanceBtn').addEventListener('click', () => {
+            window.location.href = '/api/export/attendance';
+        });
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('aDate').value = today;
+
+        fillAttendanceStudents();
+        loadAttendance();
+        {% endif %}
+
+        // ====== كود صفحة التقارير ======
+        {% if page == 'reports' %}
+        async function fillReportStudents() {
+            const data = await api('/api/students');
+            const sel = document.getElementById('rStudent');
+            sel.innerHTML = '<option value="">اختر الطالب</option>';
+            if (data.success) {
+                data.students.forEach(s => {
+                    sel.insertAdjacentHTML('beforeend', `<option value="${s.id}">${esc(s.name)} — ${esc(s.grade)}</option>`);
+                });
+            }
+        }
+
+        document.getElementById('showReportBtn').addEventListener('click', async () => {
+            const id = document.getElementById('rStudent').value;
+            const out = document.getElementById('reportOutput');
+            if (!id) { toast('اختر طالباً', 'error'); return; }
+
+            const data = await api('/api/report/student/' + id);
+            if (!data.success) { out.innerHTML = '<div class="alert-custom alert-error">' + esc(data.error) + '</div>'; return; }
+
+            const s = data.student;
+            const att = data.attendance;
+            const pct = data.average;
+            const pctCls = pct >= 75 ? 'green' : pct >= 50 ? 'yellow' : 'red';
+
+            out.innerHTML = `
+                <div class="row g-4 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <div class="stat">
+                            <div class="stat-icon violet"><i class="bi bi-person-fill"></i></div>
+                            <div><div class="stat-num" style="font-size: 1.2rem;">${esc(s.name)}</div><div class="stat-lbl">${esc(s.grade)}</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat">
+                            <div class="stat-icon ${pctCls}"><i class="bi bi-percent"></i></div>
+                            <div><div class="stat-num">${pct}%</div><div class="stat-lbl">المعدل العام</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat">
+                            <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+                            <div><div class="stat-num">${att.present || 0}</div><div class="stat-lbl">أيام الحضور</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat">
+                            <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+                            <div><div class="stat-num">${att.absent || 0}</div><div class="stat-lbl">أيام الغياب</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title"><i class="bi bi-clipboard-data-fill"></i> الدرجات</div>
+                    ${data.grades.length ? `
+                        <div class="table-wrap">
+                            <div class="table-responsive">
+                                <table class="tbl">
+                                    <thead><tr><th>المادة</th><th>الدرجة</th><th>النسبة</th><th>التاريخ</th></tr></thead>
+                                    <tbody>
+                                        ${data.grades.map(g => {
+                                            const p = g.max_score > 0 ? (g.score / g.max_score * 100) : 0;
+                                            const c = p >= 75 ? 'green' : p >= 50 ? 'yellow' : 'red';
+                                            return `<tr>
+                                                <td style="font-weight: 700;">${esc(g.subject)}</td>
+                                                <td style="font-family: monospace; direction: ltr; font-weight: 800; font-size: 1.1rem;">${g.score} / ${g.max_score}</td>
+                                                <td><span class="tag ${c}">${p.toFixed(1)}%</span></td>
+                                                <td style="color: var(--text-2);">${esc(g.exam_date || '—')}</td>
+                                            </tr>`;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ` : '<div class="alert-custom"><i class="bi bi-info-circle"></i> لا توجد درجات مسجلة</div>'}
+                </div>
+            `;
+        });
+
+        fillReportStudents();
+        {% endif %}
+
+        // ====== إغلاق النافذة المنبثقة ======
+        document.getElementById('modalClose').addEventListener('click', () => {
+            document.getElementById('editModal').classList.remove('active');
+        });
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') e.target.classList.remove('active');
+        });
+    </script>
+
+</body>
+</html>
