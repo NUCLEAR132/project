@@ -1,43 +1,44 @@
-import sqlite3
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-DB_PATH = "school.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
+# Render بيدي اللينك بـ postgres:// و psycopg2 بيحبه postgresql://
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
-
 
 def init_db():
     conn = get_db()
     cur = conn.cursor()
 
-    cur.executescript("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             grade TEXT NOT NULL,
             birth_date TEXT,
             guardian_phone TEXT,
             address TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
         CREATE TABLE IF NOT EXISTS teachers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             subject TEXT NOT NULL,
             phone TEXT,
             email TEXT,
             hire_date TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
         CREATE TABLE IF NOT EXISTS classes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             grade TEXT NOT NULL,
             day TEXT NOT NULL,
             period INTEGER NOT NULL,
@@ -47,7 +48,7 @@ def init_db():
         );
 
         CREATE TABLE IF NOT EXISTS grades (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             student_id INTEGER NOT NULL,
             subject TEXT NOT NULL,
             score REAL NOT NULL,
@@ -58,7 +59,7 @@ def init_db():
         );
 
         CREATE TABLE IF NOT EXISTS attendance (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             student_id INTEGER NOT NULL,
             date TEXT NOT NULL,
             status TEXT NOT NULL,
@@ -68,4 +69,5 @@ def init_db():
     """)
 
     conn.commit()
+    cur.close()
     conn.close()

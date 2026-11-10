@@ -97,11 +97,11 @@ def api_stats():
 
     today = time.strftime("%Y-%m-%d")
     present_today = cur.execute(
-        "SELECT COUNT(*) FROM attendance WHERE date = ? AND status = 'present'",
+        "SELECT COUNT(*) FROM attendance WHERE date = %s AND status = 'present'",
         (today,)
     ).fetchone()[0]
     absent_today = cur.execute(
-        "SELECT COUNT(*) FROM attendance WHERE date = ? AND status = 'absent'",
+        "SELECT COUNT(*) FROM attendance WHERE date = %s AND status = 'absent'",
         (today,)
     ).fetchone()[0]
 
@@ -135,10 +135,10 @@ def api_students_list():
     params = []
 
     if search:
-        query += " AND (name LIKE ? OR guardian_phone LIKE ?)"
+        query += " AND (name LIKE %s OR guardian_phone LIKE %s)"
         params.extend([f"%{search}%", f"%{search}%"])
     if grade_filter:
-        query += " AND grade = ?"
+        query += " AND grade = %s"
         params.append(grade_filter)
 
     query += " ORDER BY grade, name"
@@ -163,7 +163,7 @@ def api_students_add():
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO students (name, grade, birth_date, guardian_phone, address) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO students (name, grade, birth_date, guardian_phone, address) VALUES (%s, %s, %s, %s, %s)",
         (name, grade, data.get("birth_date", ""), data.get("guardian_phone", ""), data.get("address", ""))
     )
     conn.commit()
@@ -187,7 +187,7 @@ def api_students_update(sid):
 
     conn = get_db()
     conn.execute(
-        "UPDATE students SET name=?, grade=?, birth_date=?, guardian_phone=?, address=? WHERE id=?",
+        "UPDATE students SET name=%s, grade=%s, birth_date=%s, guardian_phone=%s, address=%s WHERE id=%s",
         (name, grade, data.get("birth_date", ""), data.get("guardian_phone", ""), data.get("address", ""), sid)
     )
     conn.commit()
@@ -202,7 +202,7 @@ def api_students_delete(sid):
         return unauthorized()
 
     conn = get_db()
-    conn.execute("DELETE FROM students WHERE id=?", (sid,))
+    conn.execute("DELETE FROM students WHERE id=%s", (sid,))
     conn.commit()
     conn.close()
 
@@ -236,7 +236,7 @@ def api_teachers_add():
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO teachers (name, subject, phone, email, hire_date) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO teachers (name, subject, phone, email, hire_date) VALUES (%s, %s, %s, %s, %s)",
         (name, subject, data.get("phone", ""), data.get("email", ""), data.get("hire_date", ""))
     )
     conn.commit()
@@ -260,7 +260,7 @@ def api_teachers_update(tid):
 
     conn = get_db()
     conn.execute(
-        "UPDATE teachers SET name=?, subject=?, phone=?, email=?, hire_date=? WHERE id=?",
+        "UPDATE teachers SET name=%s, subject=%s, phone=%s, email=%s, hire_date=%s WHERE id=%s",
         (name, subject, data.get("phone", ""), data.get("email", ""), data.get("hire_date", ""), tid)
     )
     conn.commit()
@@ -275,7 +275,7 @@ def api_teachers_delete(tid):
         return unauthorized()
 
     conn = get_db()
-    conn.execute("DELETE FROM teachers WHERE id=?", (tid,))
+    conn.execute("DELETE FROM teachers WHERE id=%s", (tid,))
     conn.commit()
     conn.close()
 
@@ -295,7 +295,7 @@ def api_schedule_list():
             SELECT c.*, t.name as teacher_name
             FROM classes c
             LEFT JOIN teachers t ON c.teacher_id = t.id
-            WHERE c.grade = ?
+            WHERE c.grade = %s
             ORDER BY c.day, c.period
         """, (grade,)).fetchall()
     else:
@@ -340,7 +340,7 @@ def api_schedule_add():
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO classes (grade, day, period, subject, teacher_id) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO classes (grade, day, period, subject, teacher_id) VALUES (%s, %s, %s, %s, %s)",
         (grade, day, period, subject, teacher_id)
     )
     conn.commit()
@@ -356,7 +356,7 @@ def api_schedule_delete(cid):
         return unauthorized()
 
     conn = get_db()
-    conn.execute("DELETE FROM classes WHERE id=?", (cid,))
+    conn.execute("DELETE FROM classes WHERE id=%s", (cid,))
     conn.commit()
     conn.close()
 
@@ -381,10 +381,10 @@ def api_grades_list():
     params = []
 
     if student_id:
-        query += " AND g.student_id = ?"
+        query += " AND g.student_id = %s"
         params.append(student_id)
     if subject:
-        query += " AND g.subject = ?"
+        query += " AND g.subject = %s"
         params.append(subject)
 
     query += " ORDER BY g.exam_date DESC, g.id DESC"
@@ -414,7 +414,7 @@ def api_grades_add():
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO grades (student_id, subject, score, max_score, exam_date, notes) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO grades (student_id, subject, score, max_score, exam_date, notes) VALUES (%s, %s, %s, %s, %s, %s)",
         (student_id, subject, score, max_score, data.get("exam_date", ""), data.get("notes", ""))
     )
     conn.commit()
@@ -430,7 +430,7 @@ def api_grades_delete(gid):
         return unauthorized()
 
     conn = get_db()
-    conn.execute("DELETE FROM grades WHERE id=?", (gid,))
+    conn.execute("DELETE FROM grades WHERE id=%s", (gid,))
     conn.commit()
     conn.close()
 
@@ -455,10 +455,10 @@ def api_attendance_list():
     params = []
 
     if date:
-        query += " AND a.date = ?"
+        query += " AND a.date = %s"
         params.append(date)
     if grade:
-        query += " AND s.grade = ?"
+        query += " AND s.grade = %s"
         params.append(grade)
 
     query += " ORDER BY a.date DESC, s.name"
@@ -487,18 +487,18 @@ def api_attendance_add():
 
     conn = get_db()
     existing = conn.execute(
-        "SELECT id FROM attendance WHERE student_id=? AND date=?",
+        "SELECT id FROM attendance WHERE student_id=%s AND date=%s",
         (student_id, date)
     ).fetchone()
 
     if existing:
         conn.execute(
-            "UPDATE attendance SET status=?, notes=? WHERE id=?",
+            "UPDATE attendance SET status=%s, notes=%s WHERE id=%s",
             (status, data.get("notes", ""), existing["id"])
         )
     else:
         conn.execute(
-            "INSERT INTO attendance (student_id, date, status, notes) VALUES (?, ?, ?, ?)",
+            "INSERT INTO attendance (student_id, date, status, notes) VALUES (%s, %s, %s, %s)",
             (student_id, date, status, data.get("notes", ""))
         )
 
@@ -513,18 +513,18 @@ def api_report_student(sid):
         return unauthorized()
 
     conn = get_db()
-    student = conn.execute("SELECT * FROM students WHERE id=?", (sid,)).fetchone()
+    student = conn.execute("SELECT * FROM students WHERE id=%s", (sid,)).fetchone()
     if not student:
         conn.close()
         return jsonify({"success": False, "error": "الطالب غير موجود"}), 404
 
     grades = conn.execute(
-        "SELECT subject, score, max_score, exam_date FROM grades WHERE student_id=? ORDER BY exam_date DESC",
+        "SELECT subject, score, max_score, exam_date FROM grades WHERE student_id=%s ORDER BY exam_date DESC",
         (sid,)
     ).fetchall()
 
     attendance = conn.execute(
-        "SELECT status, COUNT(*) as cnt FROM attendance WHERE student_id=? GROUP BY status",
+        "SELECT status, COUNT(*) as cnt FROM attendance WHERE student_id=%s GROUP BY status",
         (sid,)
     ).fetchall()
 
