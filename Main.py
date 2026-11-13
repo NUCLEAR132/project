@@ -47,7 +47,24 @@ import time
 # ============================================================================
 
 app = Flask(__name__)
+@app.before_request
+def block_bots():
+    user_agent = request.headers.get('User-Agent', '').lower()
 
+    # لو اللي داخل مش متصفح حقيقي، اديله صفحة وهمية
+    bad_agents = ['python-requests', 'curl', 'wget', 'httpclient', 'scrapy', 'bot']
+
+    for bad in bad_agents:
+        if bad in user_agent:
+            return """
+            <html>
+            <head><title>Tenx Plus</title></head>
+            <body style="background:black;color:red;text-align:center;margin-top:200px;font-family:Arial">
+            <h1>Dont Try kid</h1>
+            <p>This site is protected by Tenx Plus Security</p>
+            </body>
+            </html>
+            """, 403
 # Initialize Database
 # This will create all tables if not exists
 # Tables: students, teachers, classes, grades, attendance
