@@ -269,6 +269,33 @@
     </div>
 
     <script>
+        // كشف لو فتح DevTools
+        setInterval(function() {
+            let start = new Date().getTime();
+            debugger; // لو الـ DevTools مفتوح، السطر ده هيوقف الصفحة
+            let end = new Date().getTime();
+            
+            if (end - start > 100) {
+                // اتقفش بيفتح F12
+                document.body.innerHTML = `
+                <div style="background:black;color:red;text-align:center;padding-top:200px;height:100vh">
+                    <h1>Dont try again</h1>
+                    <p>DevTools Detected</p>
+                </div>`;
+                // امسح كل حاجة
+                localStorage.clear();
+                sessionStorage.clear();
+            }
+        }, 1000);
+        
+        // منع كليك يمين و F12 و Ctrl+U
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:200px'>Dont try again</h1>";
+            }
+        });
         // ====== الوضع المظلم وتبديل الصورة ======
         const htmlEl = document.documentElement;
         const themeToggle = document.getElementById('themeToggle');
